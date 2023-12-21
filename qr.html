@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="favicon.png">
+    <title>OPEN BOOK</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .camera-view {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        .hidden {
+            display: none;
+        }
+        .div4{
+            
+            background-color: #062354;
+        }
+        .div311{
+            position: fixed;
+        }
+        
+        
+    </style>
+    <script>
+        function hideH2() {
+            document.querySelector('.h2').style.display = 'none';
+            document.querySelector('.img56').style.display = 'none';
+            document.querySelector('.hd').style.display = 'none';
+            document.querySelector('.div6').style.display = 'none';
+            document.querySelector('.b26').style.display = 'none';
+        }
+    </script>
+</head>
+<body background="image 1.png">
+    
+    <div class="div4">
+        <div class="div6">
+            <h1 class="hd">Scan Your QRcode</h1>
+        </div>
+       
+        <div class="div8">
+            <video id="videoElement" class="camera-view"></video>
+            <img src="qr.png" class="img56" alt="img6">
+            <div id="message" class="hidden"><div class="petdiv"><a href="home.html"><button class="petbtn"><img class="petimg" src="peter.png" alt="img"></button></a>
+            <div ><h1 class="petdis">Hello John</h1></div>
+            </div>
+            </div>
+        </div>
+        <div class="div7">
+            <button id="scanButton" onclick="hideH2()" class="b26"><h3 class="hede">Scan</h3></button>
+        </div>
+    </div>
+    
+    <div class="div311">
+        <h2 class="h2">Powered By OPENBOOK</h2>
+    </div>
+    <script>
+        let darkDetected = false;
+    
+        document.getElementById('scanButton').addEventListener('click', function () {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (stream) {
+                        var video = document.getElementById('videoElement');
+                        var img = document.querySelector('.img56');
+    
+                        video.srcObject = stream;
+                        video.style.display = 'block';
+                        img.style.display = 'none';
+    
+                        video.play();
+    
+                        setInterval(checkBrightness, 500);
+                    })
+                    .catch(function (error) {
+                        console.error('Error accessing the camera:', error);
+                    });
+            } else {
+                alert('getUserMedia is not supported in this browser');
+            }
+        });
+    
+        function checkBrightness() {
+            var video = document.getElementById('videoElement');
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var brightness = calculateBrightness(imageData.data);
+    
+            if (brightness <20 && !darkDetected) {
+                video.style.display = 'none';
+                document.querySelector('.img56').style.display = 'none';
+                document.getElementById('scanButton').style.display = 'none';
+                document.getElementById('message').classList.remove('hidden');
+                darkDetected = true;
+            }
+        }
+    
+        function calculateBrightness(data) {
+            var sum = 0;
+            for (var i = 0; i < data.length; i += 4) {
+                sum += (0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+            }
+            return sum / (data.length / 4);
+        }
+    </script>
+
+  
+</body>
+</html>
+
